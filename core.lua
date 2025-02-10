@@ -12,8 +12,12 @@ local LOPMinimapLDB = LibStub("LibDataBroker-1.1"):NewDataObject("LopMinimap", {
         end
     end
 })
-ns.VERS = 1
 
+--!DO NOT EDIT
+--!Will match release tag with github actions
+ns.MAJOR = 9999
+ns.MINOR = 9999
+--!Will automatically switch to false on release
 ns.IS_DEBUG = true
 
 function ns:DEBUG(msg)
