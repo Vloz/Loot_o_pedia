@@ -1,0 +1,61 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../FrameXML/UI.xsd">
+    <Frame name="LOP_PortraitList" inherits="BackdropTemplate">
+        <Size x="300" y="400"/>
+        <Scripts>
+            <OnLoad>
+                ns:InitPortraitList(self)
+            </OnLoad>
+        </Scripts>
+        <Frames>
+            <Frame parentKey="ListFrame" name="$parent_List">
+                <Size x="50" y="50"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" />
+                </Anchors>
+            </Frame>
+            <Frame name="$parent_ControlsFrame" parentKey="ControlsFrame" hidden="false">
+                <Size x="100" y="25"/>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <FontString parentKey="PageText" inherits="GameFontNormal" text="1/99" justifyH="CENTER">
+                            <Anchors>
+                                <Anchor point="TOP" relativeTo="$parent" x="0" y="-7"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Frames>
+                    <Button parentKey="PrevButton" name="$parent_prevButton" hidden="false">
+                        <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up" />
+                        <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down" />
+                        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+                        <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled" />
+                        <Size x="25" y="25"/>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button parentKey="NextButton" name="$parent_nextButton" hidden="false">
+                        <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up" />
+                        <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down" />
+                        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+                        <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled" />
+                        <Size x="25" y="25"/>
+                        <Anchors>
+                            <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+        </Frames>
+    </Frame>
+</Ui>

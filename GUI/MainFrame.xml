@@ -1,0 +1,125 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Frame name="LOP_MainFrame" parent="UIParent" hidden="true" enableMouse="true">
+        <Scripts>
+            <OnLoad>
+                ns:MainFrame_OnLoad(self)
+            </OnLoad>
+            <OnShow>
+                PlaySound(SOUNDKIT.IG_ABILITY_OPEN);
+                LootOPedia_MainFrame_OnShow(self)
+            </OnShow>
+            <OnHide>
+                PlaySound(SOUNDKIT.IG_ABILITY_CLOSE);
+            </OnHide>
+        </Scripts>
+        <HitRectInsets>
+            <AbsInset left="10" right="89" top="13" bottom="75"/>
+        </HitRectInsets>
+        <Size>
+            <AbsDimension x="768" y="512"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" />
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <!-- Frame Icon -->
+                <Texture file="Interface\AddOns\Loot_o_pedia\media\frame_icon">
+                    <Size x="64" y="64" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent">
+                            <Offset x="8" y="-8" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <!-- Left BG -->
+                <Texture file="Interface\QuestFrame\UI-QuestLogDualPane-Left">
+                    <Size x="512" y="512" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent">
+                            <Offset x="0" y="0" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <!-- Right BG -->
+                <Texture file="Interface\QuestFrame\UI-QuestLogDualPane-Right">
+                    <Size x="256" y="512" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent">
+                            <Offset x="512" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+
+            </Layer>
+            <Layer level="BORDER">
+
+                <!-- patchs hide extra buttons bellow -->
+                <Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
+                    <Size x="117" y="26" />
+                    <TexCoords left="-0.08" right="-0.95" top="0.56" bottom="1" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+                            <Offset x="556" y="75" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
+                    <Size x="117" y="26" />
+                    <TexCoords left="0.05" right="0.92" top="0.56" bottom="1" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+                            <Offset x="218" y="75" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
+                    <Size x="117" y="26" />
+                    <TexCoords left="0.05" right="0.92" top="0.56" bottom="1" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+                            <Offset x="118" y="75" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
+                    <Size x="117" y="26" />
+                    <TexCoords left="0" right="0.92" top="0.56" bottom="1" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parent">
+                            <Offset x="18" y="75" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+
+            </Layer>
+            <Layer level="ARTWORK">
+                <FontString inherits="GameFontNormal" text="Loot-o-pedia">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeTo="$parent" relativePoint="TOP">
+                            <Offset>
+                                <AbsDimension x="-42" y="-25"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
+                        <Offset x="-84" y="-8" />
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Frame name="LOP_UpdateTabFrame" inherits="LOP_UpdateFrameTemplate">
+
+            </Frame>
+            <Frame name="LOP_AreaTabFrame" inherits="LOP_AreaFrameTemplate">
+            </Frame>
+        </Frames>
+    </Frame>
+</Ui>

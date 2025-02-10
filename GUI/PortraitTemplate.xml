@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../FrameXML/UI.xsd">
+    <Button name="LOP_PortraitTemplate" virtual="true">
+        <HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" />
+        <Size x="50" y="50"/>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString parentKey="ratetext" text="" justifyH="LEFT" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" x="-5" y="3"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="qttext" text="" justifyH="LEFT" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parent"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="txt" name="$parent_Portrait" file="Interface\COMMON\portrait-ring-withbg">
+                    <TexCoords left="0.12" right="0.88" top="0.12" bottom="0.88"/>
+                    <Size x="48" y="48"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+    </Button>
+</Ui>

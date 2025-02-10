@@ -1,0 +1,149 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Frame name="LOP_TabFrameTemplate" hidden="true" virtual="true">
+        <KeyValues>
+            <KeyValue key="showHook" value="LootOPedia_ShowUpdateTabFrame" type="string" />
+            <KeyValue key="bgLeft" value="Interface\AddOns\Loot_o_pedia\media\mixed:0:0.89:0:1" type="nil" />
+            <KeyValue key="bgRight" value="Interface\LFGFRAME\UI-LFG-BACKGROUND-DUNGEONWALL:0.1:0.537:0:1" type="nil" />
+        </KeyValues>
+        <Scripts>
+            <OnLoad>
+            self.ShowTabFrame = _G[self.showHook]
+            if self.bgLeft then
+                local file,l,r,b,t = strsplit(":", self.bgLeft)
+                self.LeftPanel.bgtxt:SetTexture(file)
+                self.LeftPanel.bgtxt:SetTexCoord(l,r,b,t)
+            end
+            if self.bgRight then
+                local file,l,r,b,t = strsplit(":", self.bgRight)
+                self.RightPanel.bgtxt:SetTexture(file,true,true)
+                self.RightPanel.bgtxt:SetTexCoord(l,r,b,t)
+            end
+            </OnLoad>
+        </Scripts>
+        <Size>
+            <AbsDimension x="658" y="361"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parent">
+                <Offset x="19" y="-74" />
+            </Anchor>
+        </Anchors>
+        <Frames>
+            <ScrollFrame parentKey="LeftPanel" name="$parent_LeftPanel" inherits="ScrollFrameTemplate">
+                <KeyValues>
+                    <KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+                </KeyValues>
+                <Size>
+                    <AbsDimension x="303" y="337"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent">
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BORDER">
+                        <Texture parentKey="bgtxt" />
+                    </Layer>
+                    <Layer level="BACKGROUND">
+                        <Texture file="Interface\ENCOUNTERJOURNAL\UI-EJ-JOURNALBG" setAllPoints="true">
+                            <TexCoords left="0" right="0.38" top="0" bottom="0.83"/>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <ScrollChild>
+                    <Frame parentKey="Container">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT"/>
+                        </Anchors>
+
+                    </Frame>
+                </ScrollChild>
+                <Frames>
+                    <Frame frameLevel="50">                        <!-- Left panel border overlay -->
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="BORDER">
+                                <Texture file="Interface\AddOns\Loot_o_pedia\media\border_backdrop">
+                                    <TextureSliceMargins left="8" right="8" top="8" bottom="8"/>
+                                    <TextureSliceMode mode="Stretched"/>
+                                    <Size x="100" y="100" />
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                        <!-- <Scripts>
+                            <OnLoad>
+                                self:SetFrameLevel(50)
+                            </OnLoad>
+                        </Scripts> -->
+                    </Frame>
+                </Frames>
+
+            </ScrollFrame>
+            <ScrollFrame parentKey="RightPanel" name="$parent_RightPanel" inherits="ScrollFrameTemplate">
+                <KeyValues>
+                    <KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+                </KeyValues>
+                <KeyValues>
+                    <KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+                </KeyValues>
+                <Size>
+                    <AbsDimension x="300" y="337"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent">
+                        <Offset x="331" y="0" />
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BORDER">
+                        <Texture parentKey="bgtxt" />
+                    </Layer>
+                    <Layer level="BACKGROUND">
+                        <Texture file="Interface\BlackMarket\BlackMarketBackground-Tile"/>
+                    </Layer>
+                </Layers>
+                <ScrollChild>
+                    <Frame parentKey="Container">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT"/>
+                        </Anchors>
+
+                    </Frame>
+                </ScrollChild>
+                <Frames>
+                    <Frame frameLevel="50">                        <!-- Right panel border overlay -->
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT"/>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="BORDER">
+                                <Texture file="Interface\AddOns\Loot_o_pedia\media\border_backdrop">
+                                    <TextureSliceMargins left="8" right="8" top="8" bottom="8"/>
+                                    <TextureSliceMode mode="Stretched"/>
+                                    <Size x="100" y="100" />
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                        <!--                         <Scripts>
+                            <OnLoad>
+                                self:SetFrameLevel(50)
+                            </OnLoad>
+                        </Scripts> -->
+                    </Frame>
+                </Frames>
+
+            </ScrollFrame>
+
+        </Frames>
+
+    </Frame>
+</Ui>
+

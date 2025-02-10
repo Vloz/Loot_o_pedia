@@ -1,0 +1,40 @@
+## Interface: 11505
+## Title: Loot-o-Pedia|cFF00FF00 100|r
+## Notes: Participative loot encyclopedia
+## Author: vloz
+## Version: 100
+## SavedVariables: LootOPediaDB
+
+embeds.xml
+
+Locales\Locales.xml
+
+data\creature_types.lua
+core.lua
+database.lua
+scanned.lua
+utils.lua
+harvest.lua
+area_lookup.lua
+npc_lookup.lua
+bitwise\dataview.lua
+bitwise\export.lua
+bitwise\import.lua
+bitwise\parse.lua
+GUI\ItemTemplate.xml
+GUI\ItemList.lua
+GUI\ItemList.xml
+GUI\PortraitTemplate.xml
+GUI\PortraitList.lua
+GUI\PortraitList.xml
+GUI\TabTemplate.xml
+GUI\TabFrameTemplate.xml
+GUI\DropList.lua
+GUI\UpdateDialogTemplate.xml
+GUI\UpdateDialogTemplate.lua
+GUI\UpdateFrame.lua
+GUI\UpdateFrame.xml
+GUI\AreaFrame.lua
+GUI\AreaFrame.xml
+GUI\MainFrame.lua
+GUI\MainFrame.xml

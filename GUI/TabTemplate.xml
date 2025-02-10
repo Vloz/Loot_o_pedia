@@ -1,0 +1,69 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../FrameXML/UI.xsd">
+    <Frame name="LOP_TabTemplate" virtual="true">
+        <Size x="26" y="26"/>
+        <Layers>
+            <Layer level="BORDER">
+                <Texture file="Interface\COMMON\BlueMenuRing">
+                    <Size x="40" y="40" />
+                    <Anchors>
+                        <Anchor point="CENTER" relativePoint="CENTER">
+                            <Offset x="0" y="0" />
+                        </Anchor>
+                    </Anchors>
+                    <TexCoords left="0" right="0.813" top="0" bottom="0.813" />
+                </Texture>
+            </Layer>
+            <Layer level="BORDER">
+                <Texture name="$parent_Icon" file="Interface\AddOns\Loot_o_pedia\media\mixed">
+                    <!-- <Color r="1" g="1" b="0" a="1"/> -->
+                    <Size x="26" y="26" />
+                    <Anchors>
+                        <Anchor point="CENTER" relativePoint="CENTER">
+                            <Offset x="0" y="0" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture name="$parent_select" file="Interface\Store\minimap-delivery-highlight" hidden="true" alphaMode="ADD">
+                    <Color r="1" g="0.5" b="0" a="1"/>
+                    <Size x="38" y="38" />
+                    <Anchors>
+                        <Anchor point="CENTER" relativePoint="CENTER">
+                            <Offset x="0" y="-1" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parent_hl" file="Interface\Store\minimap-delivery-highlight" hidden="true" alphaMode="ADD">
+                    <Color r="0.7" g="0.9" b="1" a="0.7"/>
+                    <Size x="34" y="34" />
+                    <Anchors>
+                        <Anchor point="CENTER" relativePoint="CENTER">
+                            <Offset x="0" y="-1" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+
+        <Scripts>
+            <OnShow>
+            </OnShow>
+            <OnEnter>
+                _G[self:GetName().."_hl"]:Show()
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                GameTooltip:SetText(self:GetAttribute("data").tooltip)
+                GameTooltip:Show()
+            </OnEnter>
+            <OnLeave>
+                _G[self:GetName().."_hl"]:Hide()
+                GameTooltip:Hide()
+            </OnLeave>
+            <OnMouseDown>
+                PlaySound(906)
+                ns:SelectTab(self:GetName())
+            </OnMouseDown>
+        </Scripts>
+    </Frame>
+</Ui>

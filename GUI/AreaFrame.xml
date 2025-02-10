@@ -1,0 +1,54 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Frame name="LOP_AreaFrameTemplate" inherits="LOP_TabFrameTemplate" virtual="true">
+
+        <Frames>
+            <Frame parentKey="LeftPanel" name="$parent_LeftFrame">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent" />
+                </Anchors>
+                <Size>
+                    <AbsDimension x="303" y="338" />
+                </Size>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="TitleStr" inherits="QuestTitleFont" text="Les Paluns" justifyH="LEFT">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parent" x="25" y="-15" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <!--             <Frame name="$parent_NoData" parentKey="NoDataPanel" inherits="BackdropTemplate" frameLevel="10">
+                <KeyValues>
+                    <KeyValue key="backdropInfo" value="BACKDROP_TOAST_12_12" type="global" />
+                </KeyValues>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent" x="0" y="0" />
+                </Anchors>
+                <Size>
+                    <AbsDimension x="303" y="338" />
+                </Size>
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">
+                            <Size>
+                                <AbsDimension x="280" y="60" />
+                            </Size>
+                            <Anchors>
+                                <Anchor point="CENTER" relativeTo="$parent" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame> -->
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                self.ShowTabFrame = LootOPedia_ShowAreaTabFrame
+            </OnLoad>
+        </Scripts>
+    </Frame>
+</Ui>

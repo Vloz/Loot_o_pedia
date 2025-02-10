@@ -1,0 +1,130 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Frame name="LOP_UpdateFrameTemplate" inherits="LOP_TabFrameTemplate" virtual="true">
+        <KeyValues>
+            <KeyValue key="showHook" value="LootOPedia_ShowUpdateTabFrame" type="string" />
+            <KeyValue key="bgLeft" value="Interface\AddOns\Loot_o_pedia\media\mixed:0:0.89:0:1" type="string" />
+            <KeyValue key="bgRight" value="Interface\LFGFRAME\UI-LFG-BACKGROUND-DUNGEONWALL:0.1:0.537:0:1" type="string" />
+        </KeyValues>
+        <Frames>
+            <Frame parentKey="leftPanel" name="$parentLeftPanel">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"></Anchor>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="300" y="335"/>
+                </Size>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="title" inherits="QuestTitleFont" text="Can't update yet!" justifyV="MIDDLE">
+                            <Color r="1" g="1" b="1" a="1"/>
+                            <Size x="260" y="106"/>
+                            <Anchors>
+                                <Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="message" inherits="GameFontNormalLargeOutline" wordwrap="true" justifyV="MIDDLE">
+                            <Color r="1" g="0" b="0" a="1"/>
+                            <Size x="260" y="100"/>
+                            <Anchors>
+                                <Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+                                    <Offset y="-100" />
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+
+
+                        <FontString parentKey="intro" inherits="GameFontNormalSmall2" wordwrap="true" justifyV="BOTTOM">
+                            <Size x="260" y="60"/>
+                            <Anchors>
+                                <Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+                                    <Offset y="16" />
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+
+
+                    </Layer>
+
+                </Layers>
+                <Frames>
+                    <Frame name="$parent_progress" parentKey="progress">
+                        <Anchors>
+                            <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+                            </Anchor>
+                        </Anchors>
+                        <Size>
+                            <AbsDimension x="302" y="14"/>
+                        </Size>
+                        <Layers>
+                            <Layer level="BACKGROUND">
+                                <Texture >
+                                    <Color r="0" g="0" b="0" a="1" />
+                                    <Anchors>
+                                        <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+                                        </Anchor>
+                                    </Anchors>
+                                    <Size x="302" y="10"/>
+                                </Texture>
+                            </Layer>
+                            <Layer level="BORDER">
+                                <Texture parentKey="bar" file="Interface\TargetingFrame\UI-StatusBar">
+                                    <Anchors>
+                                        <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+                                        </Anchor>
+                                    </Anchors>
+                                    <Size x="302" y="10"/>
+                                </Texture>
+                            </Layer>
+                            <Layer level="ARTWORK">
+                                <Texture file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+                                    <Size x="256" y="14"/>
+                                    <TexCoords left="0.0" right="1" top="0.785" bottom="0.84" />
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                    <Button parentKey="updateButton" text="foo" inherits="UIPanelButtonTemplate">
+                        <Size x="100" y="23"/>
+                        <Anchors>
+                            <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$parent">
+                                <Offset y="-2" />
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                if not LOP_EXPORT_URL then
+                                    LOP_EXPORT_URL = ns:UpdateUI_Export()
+                                end
+                                LOP_UpdateDialog:Show()
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+            <Frame name="LOP_UpdateDialog" hidden="true" frameStrata="DIALOG" inherits="LOP_UpdateDialogTemplate">
+            </Frame>
+        </Frames>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture file="Interface\Buttons\UI-Button-Borders2">
+                    <Size x="104" y="24"/>
+                    <TexCoords left="0.156" right="0.316" top="0.016" bottom="0.203" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+                            <Offset x="98" y="0" />
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad inherit="prepend">
+            ns:UpdateFrame_OnLoad(self)
+            </OnLoad>
+        </Scripts>
+    </Frame>
+
+</Ui>

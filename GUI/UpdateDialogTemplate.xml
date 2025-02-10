@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Frame name="LOP_UpdateDialogTemplate" inherits="BackdropTemplate" virtual="true">
+        <KeyValues>
+            <KeyValue key="backdropInfo" value="BACKDROP_TOAST_12_12" type="global" />
+        </KeyValues>
+        <Size x="400" y="250"/>
+        <Anchors>
+            <Anchor point="TOP"/>
+        </Anchors>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString parentKey="intro" name="$parentIntro" inherits="GameFontNormal" text="Go to the URL below and retrieve the punchcard data in the box." wordwrap="true">
+                    <Size x="300" y="60"/>
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="$parent" relativePoint="TOP"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="errorFS" inherits="GameFontNormalSmall" text="">
+                    <Size y="40" x="380" />
+                    <Color r="1" g="0" b="0" a="1"/>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" y="2" x="10"/>
+                    </Anchors>
+                </FontString>
+
+            </Layer>
+        </Layers>
+        <Frames>
+            <EditBox parentKey="urlField" name="$parent_url" inherits="InputBoxTemplate" autoFocus="false" ignoreArrows="true">
+                <FontString font="Fonts\ARIALN.TTF">
+                    <Color r="1" g="1" b="1" a="1"/>
+                    <FontHeight val="14"/>
+                </FontString>
+                <Size x="360" y="20"/>
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parentIntro" relativePoint="BOTTOM">
+                        <Offset y="-10"/>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString inherits="GameFontNormalSmall" text="URL">
+                            <Size y="20"/>
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                            </Anchors>
+                        </FontString>
+                        <FontString inherits="GameFontNormalSmall" text="Data">
+                            <Size y="20" />
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" y="-45"/>
+                            </Anchors>
+                        </FontString>
+
+                    </Layer>
+                </Layers>
+            </EditBox>
+            <Frame parentKey="copyPopUp" inherits="BackdropTemplate" frameLevel="20">
+                <KeyValues>
+                    <KeyValue key="backdropInfo" value="BACKDROP_TOAST_12_12" type="global" />
+                </KeyValues>
+                <!-- Frame Size and Position -->
+                <Size x="100" y="50"/>
+                <Anchors>
+                    <Anchor point="CENTER" relativeTo="$parent_url" relativePoint="CENTER"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="text" inherits="GameFontNormal" text="Copied!" wordwrap="true">
+                            <Size x="100" y="50"/>
+                            <Anchors>
+                                <Anchor point="CENTER" relativeTo="$parent_url" relativePoint="CENTER"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+            <Frame parentKey="dataBox" name="$parentDataBox" inherits="BackdropTemplate">
+                <KeyValues>
+                    <KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global" />
+                </KeyValues>
+                <Size x="370" y="100" />
+                <Anchors>
+                    <Anchor point="TOP" relativeTo="$parent" y="-114"/>
+                </Anchors>
+
+                <Frames>
+                    <ScrollFrame parentKey="scroll" name="$parentScrollFrame" inherits="ScrollFrameTemplate">
+
+                        <Size x="324" y="80" />
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" y="-12" x="12"/>
+                        </Anchors>
+
+
+                        <ScrollChild>
+                            <EditBox name="$parentInputBox" parentKey="field" autoFocus="false" multiline="true">
+                                <Size y="20" x="324" />
+                                <FontString font="Fonts\MORPHEUS.TTF">
+                                    <Color r="0.7" g="0.9" b="0" a="1"/>
+                                    <FontHeight val="12"/>
+                                </FontString>
+
+                            </EditBox>
+                        </ScrollChild>
+                        <Scripts>
+                            <OnMouseDown>
+                            self.field:SetFocus()
+                            </OnMouseDown>
+                        </Scripts>
+                    </ScrollFrame>
+                </Frames>
+            </Frame>
+
+            <Button inherits="UIPanelCloseButton">
+                <Size x="32" y="32"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="-4" y="-4"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                    self:GetParent():Hide()
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnLoad inherit="prepend">
+            ns:UpdateDialog_OnLoad(self)
+            </OnLoad>
+        </Scripts>
+    </Frame>
+</Ui>
