@@ -11,7 +11,7 @@ local DataView = ns.DataView
 ---@alias SourceType {sourceTypeID:number,sources:table<number, Source>}
 ---@alias Difficulty {difficultyID:number ,sourceTypes:table<number, SourceType>}
 ---@alias AreaLootDataCreature {npcClass:number,npcReactionH:number,npcReactionA:number,npcPowerType:number,npcDisplayID:number,npcType:number,npcFaction:number}
----@alias AreaLoots {areaID:number,difficulties:table<number, Difficulty>,dataCreatures:table<number, AreaLootDataCreature>}
+---@alias AreaLoots {areaID:number,difficulties:table<number, Difficulty>,dataCreatures:table<number, AreaLootDataCreature>, scannedSources:table<number, boolean>}
 
 ---comment
 ---@param area any

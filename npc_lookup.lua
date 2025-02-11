@@ -1,5 +1,6 @@
 local addonName, ns = ...
 
+ns.scanned_npcs = nil
 
 ns.NpcClassifications = {
     ["worldboss"] = 6,
@@ -10,7 +11,14 @@ ns.NpcClassifications = {
     ["trivial"] = 1,
 }
 
-
+function ns:InitScannnedNpcs(areaId)
+    local build = ns:DB_Build()
+    if build and build.areas[areaId] then
+        print("try parse area loot" .. areaId)
+        local arealoots = ns:ParseAreaLoot(build.areas[areaId])
+        ns.scanned_npcs = arealoots.scannedSources
+    end
+end
 
 -- Function to extract NPC ID from a GUID
 local function GetNpcIDFromGUID(guid)
@@ -96,7 +104,7 @@ local function OnTooltipSetUnit(tooltip)
     if unit and UnitExists(unit) then
         local guid = UnitGUID(unit)
         local npcID = GetNpcIDFromGUID(guid)
-        if ns.scanned and not ns.scanned[ns.SCANNED_TYPE.CREATURE][npcID] then
+        if ns.scanned_npcs and not ns.scanned_npcs[npcID] then
             local npcName = UnitName(unit)
             if npcID and npcName then
                 local maxHP = UnitHealthMax(unit)

@@ -5,7 +5,6 @@ local previousAreaId;
 ns.MAP_UNIVERSAL_ID_OFFSET = 0x4000
 
 
-
 --- Return area id (add 0x4000 for classic instance)
 --- @return number
 function ns:getAreaId()
@@ -125,12 +124,16 @@ local function saveAreaBountyData()
     end
 end
 
-
+--Whenever area change we load the npcs scanned and check if the area has been scanned
 local function AreaChanged(areaId)
-    if ns.scanned and not ns.scanned[ns.SCANNED_TYPE.AREA][areaId] then
+    ns:InitScannnedNpcs(areaId)
+    local build = ns:DB_Build()
+    if build and build.areas and (not build.areas[areaId] or not build.areas[areaId].scn) then
         local areaName = ns:areaLocNameFromId(areaId)
         saveAreaBountyLocale()
         saveAreaBountyData()
+        build.areas[areaId] = build.areas[areaId] or {}
+        build.areas[areaId].scn = true
     end
 end
 
@@ -150,6 +153,7 @@ end
 local function PLAYER_ENTERING_WORLD()
     CheckAreaChanged()
 end
+
 
 LootOPedia:RegisterEvent("ZONE_CHANGED_NEW_AREA", ZONE_CHANGED_NEW_AREA)
 LootOPedia:RegisterEvent("PLAYER_ENTERING_WORLD", PLAYER_ENTERING_WORLD)

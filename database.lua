@@ -11,6 +11,8 @@ ns.DATA_BOUNTY_TYPE = {
     CREATURE = "2"
 }
 
+
+
 function ns:SaveLocaleBounty(localeBountType, key, value)
     local locale = GetLocale()
     local Db_lb = self:DB_LocaleBounty()
@@ -74,6 +76,10 @@ end
 
 function ns:DB_LocaleBounty()
     return self.db.global[self.game].LocaleBounty
+end
+
+function ns:DB_Build()
+    return self.db.global[self.game].build
 end
 
 function ns:SaveDataBounty(dataBountyType, key, value)

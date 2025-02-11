@@ -18,7 +18,7 @@ local LOPMinimapLDB = LibStub("LibDataBroker-1.1"):NewDataObject("LopMinimap", {
 ns.MAJOR = 9999
 ns.MINOR = 9999
 --!Will automatically switch to false on release
-ns.IS_DEBUG = true
+ns.IS_DEBUG = false
 
 function ns:DEBUG(msg)
     if ns.IS_DEBUG then
