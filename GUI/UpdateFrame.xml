@@ -95,9 +95,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                if not LOP_EXPORT_URL then
-                                    LOP_EXPORT_URL = ns:UpdateUI_Export()
-                                end
+                                LOP_EXPORT_URL = ns:UpdateUI_Export()
                                 LOP_UpdateDialog:Show()
                             </OnClick>
                         </Scripts>
@@ -124,6 +122,9 @@
             <OnLoad inherit="prepend">
             ns:UpdateFrame_OnLoad(self)
             </OnLoad>
+            <OnHide>
+                ns:UpdateFrame_OnHide(self)
+            </OnHide>
         </Scripts>
     </Frame>
 

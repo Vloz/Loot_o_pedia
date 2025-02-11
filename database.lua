@@ -49,6 +49,13 @@ function ns:DB_Wipe()
     ns:OUT("Wiped LootOPedia")
 end
 
+-- call once the export has been done and import succeeded
+function ns:DB_ClearPostExport()
+    ns.db.global[ns.game].loot_register = {}
+    ns.db.global[ns.game].DataBounty = {}
+    ns.db.global[ns.game].LocaleBounty = {}
+end
+
 function ns:DB_Game()
     return self.db.global[self.game]
 end

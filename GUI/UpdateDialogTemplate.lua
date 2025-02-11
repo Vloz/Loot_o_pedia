@@ -50,6 +50,13 @@ local function dataField_OnTextChanged(self)
         if success then
             PlaySound(878)
             frame:Hide()
+            --deleting the data after import
+            if not ns.IS_DEBUG then
+                ns:DB_ClearPostExport()
+            end
+            if ns.requiredDLArea then
+                ns:SelectTab("LOP_area_Tab", ns.requiredDLArea)
+            end
         else
             frame.errorFS:SetText(result)
             ns:DEBUG("|cffff7777 " .. result)
@@ -66,7 +73,7 @@ end
 
 
 function ns:UpdateDialog_OnLoad(self)
-    if ns.DEBUG then
+    if ns.IS_DEBUG then
         baseUrl = "http://localhost:5173/update/#"
     else
         baseUrl = "https://loot-o-pedia.web.app/update/#"

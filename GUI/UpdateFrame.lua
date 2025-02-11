@@ -132,3 +132,8 @@ function ns:GetUpdateScore()
 
     return count / ns.FULL_UPDATESCORE_COUNT, ready
 end
+
+function ns:UpdateFrame_OnHide(self)
+    ns.requiredDLArea = nil
+    LOP_UpdateDialog:Hide()
+end
