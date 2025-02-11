@@ -1,12 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
+const strip = require('strip-comments');
 
-function removeComments(filePath) {
+//! Not safe lua comments trimmer, may lead to unexpected behaviour on release side
+function removeComments(filePath, language) {
     let content = fs.readFileSync(filePath, 'utf8');
-    content = content.replace(/--\[\[.*?\]\]/gs, ''); // Remove multiline comments
-    content = content.replace(/--.*$/gm, ''); // Remove single line comments
+    content = strip(content, { language })
     fs.writeFileSync(filePath, content, 'utf8');
+
 }
 
 function updateVersionAndDebug(filePath, major, minor) {
@@ -24,16 +26,18 @@ function shouldInclude(filePath, excludeList) {
     return true;
 }
 
-function processLuaFiles(directory, tag, excludeList) {
+function processFiles(directory, tag, excludeList) {
     const files = fs.readdirSync(directory);
     files.forEach(file => {
         const filePath = path.join(directory, file);
         const stat = fs.statSync(filePath);
         if (stat.isDirectory()) {
-            processLuaFiles(filePath, tag, excludeList);
-        } else if (file.endsWith('.lua')) {
-            if (shouldInclude(filePath, excludeList)) {
-                removeComments(filePath);
+            processFiles(filePath, tag, excludeList);
+        } else if (file.endsWith('.lua') || file.endsWith('.xml')) {
+            if (shouldInclude(filePath, excludeList) && !filePath.includes('Libs')) {
+                const ext = file.slice(-3).toLowerCase()
+                if (['lua', 'xml'].includes(ext))
+                    removeComments(filePath, file.slice(-3));
                 if (path.basename(filePath) === 'core.lua') {
                     const [major, minor] = tag.slice(1).split('.');
                     updateVersionAndDebug(filePath, major, minor);
@@ -100,9 +104,9 @@ function main() {
         excludeList = fs.readFileSync(excludeListPath, 'utf8').split('\n').map(line => line.trim()).filter(Boolean);
     }
 
-    const luaDirectory = '.';
-    processLuaFiles(luaDirectory, tag, excludeList);
-    createZip(luaDirectory, outputZip, parentDir, excludeList);
+    const sourcesDirectory = '.';
+    processFiles(sourcesDirectory, tag, excludeList);
+    createZip(sourcesDirectory, outputZip, parentDir, excludeList);
 }
 
 main();

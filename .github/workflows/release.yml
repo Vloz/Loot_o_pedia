@@ -19,7 +19,9 @@ jobs:
           node-version: "14"
 
       - name: Install dependencies
-        run: npm install archiver
+        run: |
+          npm install archiver
+          npm install strip-comments
 
       - name: Prepare release
         run: node .github/workflows/release.js --tag=${GITHUB_REF#refs/tags/} --output=./.github/workflows/Loot_o_pedia_${GITHUB_REF#refs/tags/}.zip --parent-dir=Loot_o_pedia
