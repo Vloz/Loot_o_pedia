@@ -14,9 +14,12 @@ ns.NpcClassifications = {
 function ns:InitScannnedNpcs(areaId)
     local build = ns:DB_Build()
     if build and build.areas[areaId] then
-        print("try parse area loot" .. areaId)
-        local arealoots = ns:ParseAreaLoot(build.areas[areaId])
-        ns.scanned_npcs = arealoots.scannedSources
+        local success, result = pcall(function()
+            return ns:ParseAreaLoot(build.areas[areaId])
+        end)
+        if success then
+            ns.scanned_npcs = result.scannedSources
+        end
     end
 end
 

@@ -17,6 +17,9 @@ local DataView = ns.DataView
 ---@param area any
 ---@return AreaLoots
 function ns:ParseAreaLoot(area)
+    if not area.bin then
+        error("no bin data.")
+    end
     local bin = base64:decode(area.bin)
     local v = DataView:new(bin)
     --local dataCreatureSize = v.readVarInt()
