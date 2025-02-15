@@ -1,13 +1,31 @@
 local addon, ns = ...
 
-local PORTRAIT_POOL_SIZE = 25
-local PORTRAIT_COL_WIDTH = 44
-local PORTRAIT_COL_HEIGHT = 44
+local PORTRAIT_POOL_SIZE = 10
+local PORTRAIT_COL_WIDTH = 48
+local PORTRAIT_COL_HEIGHT = 48
 local PORTRAIT_ROW_MAXCOUNT = 5
-local LIST_MARGIN = 15
+local PORTRAIT_COL_MAXCOUNT = 2
+local LIST_MARGIN = 0
 
 local portraitPool;
 local portraitListFrame;
+
+local enterCallback;
+local leaveCallback;
+---@type PortraitData[]
+local portraitsDataArray;
+local page = 1
+local currentBgColor = "#fff"
+
+ns.CLASS_COLOR = {
+    [ns.NpcClassifications.worldboss] = { 0.9, 0.8, 0, 1 },
+    [ns.NpcClassifications.rareelite] = { 0.5, 0.4, 0, 1 },
+    [ns.NpcClassifications.elite] = { 0.5, 0.4, 0, 1 },
+    [ns.NpcClassifications.rare] = { 0.5, 0.5, 0.5, 1 },
+    [ns.NpcClassifications.normal] = { 0, 0, 0, 1 },
+    [ns.NpcClassifications.trivial] = { 0.5, 0.5, 0.5, 1 },
+    [0] = { 0, 0, 0, 1 },
+}
 
 
 
@@ -47,12 +65,18 @@ function ns:InitPortraitList(frame)
         local row = math.floor((i - 1) / PORTRAIT_ROW_MAXCOUNT)
         portrait:SetPoint("TOPLEFT", ListFrame, "TOPLEFT", PORTRAIT_COL_WIDTH * col + LIST_MARGIN,
             -PORTRAIT_COL_HEIGHT * row - LIST_MARGIN)
+        if (col == PORTRAIT_ROW_MAXCOUNT - 1 or row == PORTRAIT_COL_MAXCOUNT - 1) then
+            portrait.bgTx:SetTexCoord(0, col == PORTRAIT_ROW_MAXCOUNT - 1 and 0.5 or 0.523, 0,
+                row == PORTRAIT_COL_MAXCOUNT - 1 and 0.5 or 0.523)
+            portrait.bgTx:SetSize(col == PORTRAIT_ROW_MAXCOUNT - 1 and 46 or 48,
+                row == PORTRAIT_COL_MAXCOUNT - 1 and 46 or 48)
+        end
         portrait:Show()
         table.insert(portraitPool, portrait)
     end
     ListFrame:SetSize(PORTRAIT_COL_WIDTH * PORTRAIT_ROW_MAXCOUNT + LIST_MARGIN * 2,
         PORTRAIT_COL_HEIGHT * math.ceil(PORTRAIT_POOL_SIZE / PORTRAIT_ROW_MAXCOUNT) + LIST_MARGIN * 2)
-    ControlsFrame:SetPoint("TOP", ListFrame, "BOTTOM", 0, 8)
+    ControlsFrame:SetPoint("TOP", ListFrame, "BOTTOM", 0, 0)
     frame:SetSize(ListFrame:GetWidth(), ListFrame:GetHeight() + ControlsFrame:GetHeight() + 5)
     frame:Hide()
 end
@@ -78,39 +102,78 @@ local function SetPortraitTexture(creatureID, textureElement)
     SetPortraitTextureFromCreatureDisplayID(textureElement, displayID)
 end
 
----Set the source of the portrait list
----@param portraitsDataArray PortraitData[]
-function ns:ShowPortraitList(portraitsDataArray, page, enterCallback, leaveCallback)
-    local page = page or 1
-    for i = 1 + ((page - 1) * PORTRAIT_POOL_SIZE), PORTRAIT_POOL_SIZE do
+local function buildPage()
+    local baseColor = ns:hexToRGBA(currentBgColor)
+    for i = 1, PORTRAIT_POOL_SIZE do
         local portrait = portraitPool[i]
-        if i <= #portraitsDataArray then
-            portrait.data = portraitsDataArray[i]
+        portrait.borderBase:SetVertexColor(unpack(baseColor))
+        portrait.bgTx:SetVertexColor(unpack(baseColor))
+        if i <= #portraitsDataArray - ((page - 1) * PORTRAIT_POOL_SIZE) then
+            portrait.data = portraitsDataArray[((page - 1) * PORTRAIT_POOL_SIZE) + i]
             portrait.enterCallback = enterCallback
             portrait.leaveCallback = leaveCallback
-            SetPortraitTexture(portraitsDataArray[i].id, portrait.txt)
-            if portraitsDataArray[i].dropRate then
-                portrait.ratetext:SetText(portraitsDataArray[i].dropRate .. "%")
+            SetPortraitTexture(portrait.data.id, portrait.txt)
+            if portrait.data.dropRate then
+                portrait.ratetext:SetText(portrait.data.dropRate .. "%")
             else
                 portrait.ratetext:SetText("")
             end
-            if portraitsDataArray[i].minQt and portraitsDataArray[i].maxQt and (portraitsDataArray[i].minQt ~= 1 or portraitsDataArray[i].maxQt ~= 1) then
-                if portraitsDataArray[i].minQt == portraitsDataArray[i].maxQt then
-                    portrait.qttext:SetText(portraitsDataArray[i].minQt)
+            if portrait.data.minQt and portrait.data.maxQt and (portrait.data.minQt ~= 1 or portrait.data.maxQt ~= 1) then
+                if portrait.data.minQt == portrait.data.maxQt then
+                    portrait.qttext:SetText(portrait.data.minQt)
                 else
-                    portrait.qttext:SetText(portraitsDataArray[i].minQt .. "-" .. portraitsDataArray[i].maxQt)
+                    portrait.qttext:SetText(portrait.data.minQt .. "-" .. portrait.data.maxQt)
                 end
             else
                 portrait.qttext:SetText("")
             end
-            portrait:Show()
+            if portrait.data.class then
+                portrait.borderAdd:SetVertexColor(unpack(ns.CLASS_COLOR[portrait.data.class]))
+            else
+                portrait.borderAdd:SetVertexColor(0, 0, 0, 1)
+            end
+            portrait.borderAdd:Show()
+            portrait.borderBase:Show()
+            portrait.txt:Show()
+            portrait:Enable()
         else
-            portrait:Hide()
+            portrait.borderAdd:Hide()
+            portrait.borderBase:Hide()
+            portrait.txt:Hide()
+            portrait:Disable()
         end
     end
     local pageMax = math.ceil(#portraitsDataArray / PORTRAIT_POOL_SIZE)
     portraitListFrame.ControlsFrame.PageText:SetText(page .. "/" .. pageMax)
     portraitListFrame.ControlsFrame.PrevButton:SetEnabled(page > 1)
     portraitListFrame.ControlsFrame.NextButton:SetEnabled(page < pageMax)
+end
+
+
+---Set the source of the portrait list
+---@param portraitsDataArr PortraitData[]
+function ns:ShowPortraitList(portraitsDataArr, selectedPage, enterCB, leaveCB, bgC)
+    portraitsDataArray = portraitsDataArr
+    enterCallback = enterCB
+    leaveCallback = leaveCB
+    if selectedPage or not page then
+        page = selectedPage or 1
+    end
+    if bgC then
+        currentBgColor = bgC
+    else
+        currentBgColor = "#fff"
+    end
+    buildPage()
     portraitListFrame:Show()
+end
+
+function ns:PortraitPageNext()
+    page = page + 1
+    buildPage()
+end
+
+function ns:PortraitPagePrev()
+    page = page - 1
+    buildPage()
 end

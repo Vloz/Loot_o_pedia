@@ -2,9 +2,45 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../FrameXML/UI.xsd">
     <Button name="LOP_PortraitTemplate" virtual="true">
         <HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" />
-        <Size x="50" y="50"/>
+        <Size x="48" y="48"/>
         <Layers>
+            <Layer level="BACKGROUND">
+
+                <Texture parentKey="bgTx" file="Interface\AddOns\Loot_o_pedia\media\npc_gallery">
+                    <TexCoords left="0" right="0.523" top="0" bottom="0.523" />
+                    <Size x="48" y="48"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                    </Anchors>
+                </Texture>
+
+
+            </Layer>
+            <Layer level="BORDER">
+                <Texture parentKey="txt" name="$parent_Portrait">
+                    <Size x="44" y="44"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" y="-2" x="2"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
             <Layer level="ARTWORK">
+                <Texture file="Interface\AddOns\Loot_o_pedia\media\npc_frame" parentKey="borderAdd" alphaMode="ADD">
+                    <Size x="46" y="46"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                    </Anchors>
+                    <Size x="46" y="46"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                    </Anchors>
+                </Texture>
+                <Texture file="Interface\AddOns\Loot_o_pedia\media\npc_frame" parentKey="borderBase">
+                    <Size x="46" y="46"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                    </Anchors>
+                </Texture>
                 <FontString parentKey="ratetext" text="" justifyH="LEFT" inherits="NumberFontNormalSmall">
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent" x="-5" y="3"/>
@@ -15,15 +51,6 @@
                         <Anchor point="BOTTOMRIGHT" relativeTo="$parent"/>
                     </Anchors>
                 </FontString>
-            </Layer>
-            <Layer level="BACKGROUND">
-                <Texture parentKey="txt" name="$parent_Portrait" file="Interface\COMMON\portrait-ring-withbg">
-                    <TexCoords left="0.12" right="0.88" top="0.12" bottom="0.88"/>
-                    <Size x="48" y="48"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
-                    </Anchors>
-                </Texture>
             </Layer>
         </Layers>
     </Button>

@@ -3,7 +3,7 @@
 ..\FrameXML\UI.xsd">
     <Frame name="LOP_AreaFrameTemplate" inherits="LOP_TabFrameTemplate" virtual="true">
 
-        <Frames>
+        <!--         <Frames>
             <Frame parentKey="LeftPanel" name="$parent_LeftFrame">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent" />
@@ -21,33 +21,11 @@
                     </Layer>
                 </Layers>
             </Frame>
-            <!--             <Frame name="$parent_NoData" parentKey="NoDataPanel" inherits="BackdropTemplate" frameLevel="10">
-                <KeyValues>
-                    <KeyValue key="backdropInfo" value="BACKDROP_TOAST_12_12" type="global" />
-                </KeyValues>
-                <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parent" x="0" y="0" />
-                </Anchors>
-                <Size>
-                    <AbsDimension x="303" y="338" />
-                </Size>
-                <Layers>
-                    <Layer level="OVERLAY">
-                        <FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">
-                            <Size>
-                                <AbsDimension x="280" y="60" />
-                            </Size>
-                            <Anchors>
-                                <Anchor point="CENTER" relativeTo="$parent" />
-                            </Anchors>
-                        </FontString>
-                    </Layer>
-                </Layers>
-            </Frame> -->
-        </Frames>
+        </Frames> -->
         <Scripts>
             <OnLoad>
                 self.ShowTabFrame = LootOPedia_ShowAreaTabFrame
+                ns:AreaFrameOnLoad(self)
             </OnLoad>
         </Scripts>
     </Frame>

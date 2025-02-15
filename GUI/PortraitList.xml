@@ -1,17 +1,31 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../FrameXML/UI.xsd">
     <Frame name="LOP_PortraitList" inherits="BackdropTemplate">
-        <Size x="300" y="400"/>
+        <Size x="250" y="130"/>
         <Scripts>
             <OnLoad>
                 ns:InitPortraitList(self)
             </OnLoad>
         </Scripts>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="BGTx" file="Interface\AddOns\Loot_o_pedia\media\npc_gallery">
+                    <TextureSliceMargins left="4" right="4" top="4" bottom="4"/>
+                    <TextureSliceMode mode="Tiled"/>
+                    <TexCoords left="0" right="0.453" top="0.617" bottom="1"/>
+                    <Size x="250" y="130"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
         <Frames>
             <Frame parentKey="ListFrame" name="$parent_List">
-                <Size x="50" y="50"/>
+                <Size x="265" y="198"/>
+
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" />
+                    <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="6" y="-6" />
                 </Anchors>
             </Frame>
             <Frame name="$parent_ControlsFrame" parentKey="ControlsFrame" hidden="false">
@@ -37,6 +51,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
+                            ns:PortraitPagePrev()
                             </OnClick>
                         </Scripts>
                     </Button>
@@ -51,6 +66,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
+                                ns:PortraitPageNext()
                             </OnClick>
                         </Scripts>
                     </Button>

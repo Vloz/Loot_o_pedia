@@ -7,6 +7,31 @@ local L = LibStub("AceLocale-3.0"):GetLocale("LootOPedia")
 local areaLoots = nil
 
 local areaLocales = nil
+local frame;
+local leftContainer;
+local rightContainer;
+local currentAccentColor = nil;
+local currentBgColor = nil;
+
+ns.EJBG_TYPE = {
+    o = 1, --Official bgFile
+    c = 2  --Custom bgFile
+}
+ns.AreaPresets = {
+    [1429] = { --ELWYNN
+        bgC = "#263",
+        acC = "0ef",
+        bgt = "c",
+        bgv = "ELWYNN"
+    },
+    [1436] = { --WESTFALL
+        bgC = "#851",
+        acC = "#fe0",
+        bgt = "c",
+        bgv = "WESTFALL"
+    }
+
+}
 
 
 local function loadItemsData(filterSource)
@@ -64,7 +89,16 @@ local function loadPortraitData(filterItemID)
         local sourceType = selectedDifficulty.sourceTypes[ns.SOURCE_TYPE.Creature]
         for sourceID, source in pairs(sourceType.sources) do
             ---@type PortraitData
-            local portraitData = { type = sourceType, id = sourceID, weight = source.weight, loots = {} }
+            local portraitData = {
+                type = sourceType,
+                id = sourceID,
+                weight = source.weight,
+                loots = {},
+                class = source
+                    .class,
+                faction = source.faction,
+                lvlmin = source.lvlmin
+            }
             for harvestTypeID, harvestType in pairs(source.harvestTypes) do
                 for ItemId, loot in pairs(harvestType.loots) do
                     if filterItemID ~= nil and filterItemID == ItemId then
@@ -101,11 +135,11 @@ function OnPortraitLeave(portrait)
 end
 
 function OnItemEnter(item)
-    ns:ShowPortraitList(loadPortraitData(item.data.itemId), 1, OnPortraitEnter, OnPortraitLeave)
+    ns:ShowPortraitList(loadPortraitData(item.data.itemId), nil, OnPortraitEnter, OnPortraitLeave, currentBgColor)
 end
 
 function OnItemLeave(item)
-    ns:ShowPortraitList(loadPortraitData(), 1, OnPortraitEnter, OnPortraitLeave)
+    ns:ShowPortraitList(loadPortraitData(), 1, OnPortraitEnter, OnPortraitLeave, currentBgColor)
 end
 
 function LootOPedia_ShowAreaTabFrame(self, areaId)
@@ -114,6 +148,24 @@ function LootOPedia_ShowAreaTabFrame(self, areaId)
     if not areaId then
         areaId = ns:getAreaId()
     end
+    if ns.AreaPresets[areaId] then
+        local preset = ns.AreaPresets[areaId]
+        if preset.bgt == "o" then
+            self.LeftPanel.bgtxt:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BACKGROUND-" .. preset.bgv)
+        else
+            self.LeftPanel.bgtxt:SetTexture("Interface\\AddOns\\Loot_o_pedia\\media\\ej_bg\\EJ_" .. preset.bgv .. ".png")
+        end
+        self.LeftPanel.bgtxt:SetTexCoord(0, 0.76, 0, 0.83)
+        self.LeftPanel.bgtxt:SetSize(303, 337)
+        self.LeftPanel.bgtxt:SetPoint("TOPLEFT", self.LeftPanel, "TOPLEFT", 0, 0)
+        self.LeftPanel.bgtxt:Show()
+        currentAccentColor = preset.acC
+        currentBgColor = preset.bgC
+    else
+        currentAccentColor = "#fff"
+        currentBgColor = "#000"
+        self.LeftPanel.bgtxt:Hide()
+    end
     if not ns:DB_Game().build then
         ns:SelectTab("LOP_update_Tab", { ns.UPDATETAB_ORIGIN.NO_BUILD })
     elseif not ns:DB_Game().build.areas[areaId] then
@@ -121,9 +173,11 @@ function LootOPedia_ShowAreaTabFrame(self, areaId)
     elseif not ns:DB_Game().build.areas[areaId].bin or strlen(ns:DB_Game().build.areas[areaId].bin) < 16 then
         ns:SelectTab("LOP_update_Tab", { ns.UPDATETAB_ORIGIN.AREA_NOT_DL, areaId })
     else
-        LOP_PortraitList:SetParent(LOP_AreaTabFrame)
-        LOP_PortraitList:SetPoint("TOPLEFT", LOP_AreaTabFrame, "TOPLEFT", 20, -60)
-        local rightPanel = LOP_AreaTabFrame.RightPanel.Container
+        LOP_PortraitList:SetParent(leftContainer)
+        LOP_PortraitList:SetPoint("TOPLEFT", frame, "TOPLEFT", 25, -190)
+        LOP_PortraitList:SetFrameLevel(frame:GetFrameLevel() + 2)
+        LOP_PortraitList.BGTx:SetVertexColor(unpack(ns:hexToRGBA(currentBgColor)))
+        local rightPanel = frame.RightPanel.Container
         LOP_ItemList:SetParent(rightPanel)
         LOP_ItemList:SetAllPoints(rightPanel)
         rightPanel:SetSize(LOP_ItemList:GetWidth(), LOP_ItemList:GetHeight())
@@ -134,10 +188,24 @@ function LootOPedia_ShowAreaTabFrame(self, areaId)
         local portraitDataArray = loadPortraitData()
 
         local itemDataArray = loadItemsData()
-        ns:ShowPortraitList(portraitDataArray, 1, OnPortraitEnter, OnPortraitLeave)
+        ns:ShowPortraitList(portraitDataArray, 1, OnPortraitEnter, OnPortraitLeave, currentBgColor)
         ns:ShowItemList(itemDataArray, OnItemEnter, OnItemLeave)
         rightPanel:SetSize(LOP_ItemList:GetWidth(), LOP_ItemList:GetHeight())
-        LOP_AreaTabFrame.LeftPanel.TitleStr:SetText(title)
-        LOP_AreaTabFrame:Show()
+        leftContainer.TitleStr:SetText(title)
+        frame:Show()
     end
+end
+
+function ns:AreaFrameOnLoad(f)
+    frame = f
+    leftContainer = frame.LeftPanel.Container
+    leftContainer:SetSize(303, 337)
+    rightContainer = frame.RightPanel.Container
+
+    leftContainer.TitleStr = leftContainer:CreateFontString(nil, "OVERLAY", "QuestTitleFont")
+    leftContainer.TitleStr:SetPoint("TOPLEFT", leftContainer, "TOPLEFT", 10, -10)
+    leftContainer.TitleStr:SetSize(303, 20)
+    leftContainer.TitleStr:SetJustifyH("LEFT")
+    leftContainer.TitleStr:SetText("Area")
+    leftContainer:Show()
 end

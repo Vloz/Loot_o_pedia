@@ -76,11 +76,6 @@
                                 </Texture>
                             </Layer>
                         </Layers>
-                        <!-- <Scripts>
-                            <OnLoad>
-                                self:SetFrameLevel(50)
-                            </OnLoad>
-                        </Scripts> -->
                     </Frame>
                 </Frames>
 
@@ -132,11 +127,6 @@
                                 </Texture>
                             </Layer>
                         </Layers>
-                        <!--                         <Scripts>
-                            <OnLoad>
-                                self:SetFrameLevel(50)
-                            </OnLoad>
-                        </Scripts> -->
                     </Frame>
                 </Frames>
 

@@ -38,10 +38,14 @@ function ns:ParseAreaLoot(area)
             local sourceType = { sourceTypeID = sourceTypeID, sources = {} }
             for k = 1, sourcesSize, 1 do
                 local sourceID = v.readVarInt()
-                if sourceTypeID == ns.SOURCE_TYPE.CREATURE then
-                    local npcClass = bit.rshift(classFaction, 4)
-                    local npcFaction = bit.band(classFaction, 0x0F)
-                    local lvlmin = v.readVarInt()
+                local npcClass;
+                local npcFaction;
+                local lvlmin
+                if sourceTypeID == ns.SOURCE_TYPE.Creature then
+                    local classFaction = v.readInt(1)
+                    npcClass = bit.rshift(classFaction, 4)
+                    npcFaction = bit.band(classFaction, 0x0F)
+                    lvlmin = v.readVarInt()
                     --local lvlmax = v.readVarInt()
                     --local pwmax = v.readVarInt()
                     --local hpmax = v.readVarInt()
