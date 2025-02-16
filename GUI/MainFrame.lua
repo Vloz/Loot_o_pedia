@@ -81,7 +81,8 @@ function ns:BuildAreadropListTreeUI()
                     type = "category",
                     id = areaId,
                     name = area.name or self:areaLocNameFromId(areaId) or "[" .. areaId .. "]",
-                    color = { 0.90, 0.8, 0.4 }
+                    color = { 0.90, 0.8, 0.4 },
+                    nodes = {}
                 }
                 ns:AddNodeFromPath("/" .. areaId, ns.AreaDropListNodeTree, node)
             elseif area.mapType == Enum.UIMapType.Zone then

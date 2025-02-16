@@ -194,10 +194,11 @@ end
 function ns:AddNodeFromPath(path, nodeTree, node)
     local parts = { strsplit("/", path) }
     local currentTable = nodeTree
+    --DevTools_Dump(node)
     for i, part in ipairs(parts) do
-        if part ~= "" then
+        if part ~= "" then      -- skip root "/"
             local prev = currentTable.nodes[part]
-            if i == #parts then
+            if i == #parts then --if end part adding node
                 if not prev then
                     currentTable.nodes[part] = node
                 else
@@ -205,7 +206,7 @@ function ns:AddNodeFromPath(path, nodeTree, node)
                     currentTable.nodes[part] = node
                     currentTable.nodes[part].nodes = prev_nodes
                 end
-            else
+            else -- if not end part adding category if not exists
                 if not prev then
                     currentTable.nodes[part] = { type = "category", nodes = {} }
                 end
