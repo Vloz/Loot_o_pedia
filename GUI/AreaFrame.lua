@@ -8,6 +8,7 @@ local areaLoots = nil
 
 local areaLocales = nil
 local frame;
+local mapFrame;
 local leftContainer;
 local rightContainer;
 local currentAccentColor = nil;
@@ -18,9 +19,21 @@ ns.EJBG_TYPE = {
     c = 2  --Custom bgFile
 }
 ns.AreaPresets = {
+    [1426] = { --DUNMOROGH
+        bgC = "#09f",
+        acC = "#fff",
+        bgt = "c",
+        bgv = "DUNMOROGH"
+    },
+    [1428] = { --DUSKWOOD
+        bgC = "#851",
+        acC = "#fe0",
+        bgt = "c",
+        bgv = "DUSKWOOD"
+    },
     [1429] = { --ELWYNN
         bgC = "#263",
-        acC = "0ef",
+        acC = "#0ef",
         bgt = "c",
         bgv = "ELWYNN"
     },
@@ -148,6 +161,11 @@ function LootOPedia_ShowAreaTabFrame(self, areaId)
     if not areaId then
         areaId = ns:getAreaId()
     end
+    LOP_MapFrame:SetMapID(areaId)
+    print("AreaId: " .. areaId)
+    --MapCanvasMixin.OnShow(self);
+    --LOP_MapFrame:RefreshAlpha();
+    --LOP_MapFrame:UpdateUnitsVisibility();
     if ns.AreaPresets[areaId] then
         local preset = ns.AreaPresets[areaId]
         if preset.bgt == "o" then
@@ -163,7 +181,7 @@ function LootOPedia_ShowAreaTabFrame(self, areaId)
         currentBgColor = preset.bgC
     else
         currentAccentColor = "#fff"
-        currentBgColor = "#000"
+        currentBgColor = "#555"
         self.LeftPanel.bgtxt:Hide()
     end
     if not ns:DB_Game().build then
@@ -174,7 +192,7 @@ function LootOPedia_ShowAreaTabFrame(self, areaId)
         ns:SelectTab("LOP_update_Tab", { ns.UPDATETAB_ORIGIN.AREA_NOT_DL, areaId })
     else
         LOP_PortraitList:SetParent(leftContainer)
-        LOP_PortraitList:SetPoint("TOPLEFT", frame, "TOPLEFT", 25, -190)
+        LOP_PortraitList:SetPoint("BOTTOM", leftContainer, "BOTTOM", 0, 10)
         LOP_PortraitList:SetFrameLevel(frame:GetFrameLevel() + 2)
         LOP_PortraitList.BGTx:SetVertexColor(unpack(ns:hexToRGBA(currentBgColor)))
         local rightPanel = frame.RightPanel.Container
@@ -207,5 +225,15 @@ function ns:AreaFrameOnLoad(f)
     leftContainer.TitleStr:SetSize(303, 20)
     leftContainer.TitleStr:SetJustifyH("LEFT")
     leftContainer.TitleStr:SetText("Area")
+
+    LOP_MapFrame:SetParent(leftContainer)
+    LOP_MapFrame:SetPoint("TOP", leftContainer, "TOP", 0, 0)
+    LOP_MapFrame:SetFrameLevel(leftContainer:GetFrameLevel())
+    --LOP_MapFrame:SetSize(150, 100)
+    --LOP_MapFrame:Show()
+    local mapID = MapUtil.GetDisplayableMapForPlayer()
+    LOP_MapFrame:SetMapID(mapID)
+    --Mixin(mapFrame, _G["BattlefieldMapMixin"])
+
     leftContainer:Show()
 end
