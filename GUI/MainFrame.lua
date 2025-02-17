@@ -40,7 +40,7 @@ function ns:MainFrame_OnLoad(self)
 
     for name, data in pairs(ns.Tabs) do
         local tab = CreateFrame("Frame", name, frame, "LOP_TabTemplate")
-        tab:SetFrameLevel(99)
+        tab:SetFrameLevel(frame:GetFrameLevel() + 99)
         tab:SetAttribute("data", data)
         tab:SetPoint("TOPLEFT", frame, "TOPLEFT", unpack(data.position))
         _G[name .. "_Icon"]:SetTexCoord(unpack(data.icon))
