@@ -42,8 +42,13 @@ ns.AreaPresets = {
         acC = "#fe0",
         bgt = "c",
         bgv = "WESTFALL"
+    },
+    [16917] = { --NAXX
+        bgC = "#063",
+        acC = "#f9f",
+        bgt = "o",
+        bgv = "Naxxramas"
     }
-
 }
 
 
@@ -161,7 +166,9 @@ function LootOPedia_ShowAreaTabFrame(self, areaId)
     if not areaId then
         areaId = ns:getAreaId()
     end
-    LOP_MapFrame:SetMapID(areaId)
+    if ns:IsC_Map(areaId) then -- skip for classic dungeons
+        LOP_MapFrame:SetMapID(areaId)
+    end
     print("AreaId: " .. areaId)
     --MapCanvasMixin.OnShow(self);
     --LOP_MapFrame:RefreshAlpha();

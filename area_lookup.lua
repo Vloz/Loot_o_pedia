@@ -24,11 +24,15 @@ end
 --- Return the name of the area from the Globalid
 --- @param id number
 function ns:areaLocNameFromId(id)
-    if id < 0x4000 then
+    if ns:IsC_Map(id) then
         return C_Map.GetMapInfo(id).name
     else
         return GetRealZoneText(id - ns.MAP_UNIVERSAL_ID_OFFSET)
     end
+end
+
+function ns:IsC_Map(areaId) -- Classic dungeons dont support C_Map namespaces
+    return areaId < ns.MAP_UNIVERSAL_ID_OFFSET
 end
 
 function ns:getAreaDiff(sourceType)
