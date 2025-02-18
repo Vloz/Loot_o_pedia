@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-    <Frame name="LOP_MainFrame" parent="UIParent" hidden="true" enableMouse="true" frameStrata="HIGH">
+    <Frame name="LOP_MainFrame" parent="UIParent" hidden="true" movable="true" enableMouse="true" toplevel="true">
         <Scripts>
             <OnLoad>
                 ns:MainFrame_OnLoad(self)
@@ -15,13 +15,17 @@
             </OnHide>
         </Scripts>
         <HitRectInsets>
-            <AbsInset left="10" right="89" top="13" bottom="75"/>
+            <AbsInset left="10" right="1" top="13" bottom="3"/>
         </HitRectInsets>
         <Size>
-            <AbsDimension x="768" y="512"/>
+            <AbsDimension x="680" y="439"/>
         </Size>
         <Anchors>
-            <Anchor point="CENTER" />
+            <Anchor point="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="0" y="-104"/>
+                </Offset>
+            </Anchor>
         </Anchors>
         <Layers>
             <Layer level="BACKGROUND">
@@ -36,7 +40,8 @@
                 </Texture>
                 <!-- Left BG -->
                 <Texture file="Interface\QuestFrame\UI-QuestLogDualPane-Left">
-                    <Size x="512" y="512" />
+                    <Size x="512" y="439" />
+                    <TexCoords left="0" right="1" top="0" bottom="0.857" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent">
                             <Offset x="0" y="0" />
@@ -45,7 +50,8 @@
                 </Texture>
                 <!-- Right BG -->
                 <Texture file="Interface\QuestFrame\UI-QuestLogDualPane-Right">
-                    <Size x="256" y="512" />
+                    <TexCoords left="0" right="0.656" top="0" bottom="0.857" />
+                    <Size x="168" y="439" />
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parent">
                             <Offset x="512" />
@@ -58,38 +64,38 @@
 
                 <!-- patchs hide extra buttons bellow -->
                 <Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
-                    <Size x="117" y="26" />
-                    <TexCoords left="-0.08" right="-0.95" top="0.56" bottom="1" />
+                    <Size x="117" y="21" />
+                    <TexCoords left="-0.08" right="-0.95" top="0.61" bottom="0.938" />
                     <Anchors>
                         <Anchor point="BOTTOMLEFT" relativeTo="$parent">
-                            <Offset x="556" y="75" />
+                            <Offset x="558" y="5" />
                         </Anchor>
                     </Anchors>
                 </Texture>
                 <Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
-                    <Size x="117" y="26" />
-                    <TexCoords left="0.05" right="0.92" top="0.56" bottom="1" />
+                    <Size x="117" y="21" />
+                    <TexCoords left="0.05" right="0.92" top="0.61" bottom="0.938" />
                     <Anchors>
                         <Anchor point="BOTTOMLEFT" relativeTo="$parent">
-                            <Offset x="218" y="75" />
+                            <Offset x="218" y="5" />
                         </Anchor>
                     </Anchors>
                 </Texture>
                 <Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
-                    <Size x="117" y="26" />
-                    <TexCoords left="0.05" right="0.92" top="0.56" bottom="1" />
+                    <Size x="117" y="21" />
+                    <TexCoords left="0.05" right="0.92" top="0.61" bottom="0.938" />
                     <Anchors>
                         <Anchor point="BOTTOMLEFT" relativeTo="$parent">
-                            <Offset x="118" y="75" />
+                            <Offset x="118" y="5" />
                         </Anchor>
                     </Anchors>
                 </Texture>
                 <Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
-                    <Size x="117" y="26" />
-                    <TexCoords left="0" right="0.92" top="0.56" bottom="1" />
+                    <Size x="117" y="21" />
+                    <TexCoords left="0" right="0.92" top="0.61" bottom="0.938" />
                     <Anchors>
                         <Anchor point="BOTTOMLEFT" relativeTo="$parent">
-                            <Offset x="18" y="75" />
+                            <Offset x="18" y="5" />
                         </Anchor>
                     </Anchors>
                 </Texture>
@@ -111,7 +117,7 @@
             <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
                 <Anchors>
                     <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
-                        <Offset x="-84" y="-8" />
+                        <Offset x="4" y="-8" />
                     </Anchor>
                 </Anchors>
             </Button>

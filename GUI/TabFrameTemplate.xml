@@ -88,7 +88,7 @@
                     <KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
                 </KeyValues>
                 <Size>
-                    <AbsDimension x="300" y="337"/>
+                    <AbsDimension x="298" y="337"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeTo="$parent">
