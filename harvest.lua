@@ -55,6 +55,7 @@ local HARVEST_SPELLS = {
 
 local last_harvest = nil     -- return the last "harvest spell" with timestamp
 local last_item_locked = nil -- to know wich in-bag item (tiny chest, disenchant) is being opened
+local trackedMobs = {}       -- Table to store combat status of mobs before they are attacked
 
 local function IsInRaidOrGroup()
     return IsInRaid() or IsInGroup()
@@ -164,14 +165,14 @@ local function playerOwnLoot(harvestType, loots)
     return false
 end
 
-local function increaseHarvestCount(areaID, type_source_harvest, owntheloot)
+local function increaseHarvestCount(areaID, type_source_harvest, owntheloot, pos)
     local timestamp = GetServerTime()
     local Db_lr = ns:DB_LootRegister()
     if not Db_lr[areaID] then
         Db_lr[areaID] = {}
     end
     if not Db_lr[areaID][type_source_harvest] or Db_lr[areaID][type_source_harvest].l < timestamp - 604800 then
-        Db_lr[areaID][type_source_harvest] = { k = 0, sk = 0, l = timestamp, loots = {} }
+        Db_lr[areaID][type_source_harvest] = { k = 0, sk = 0, l = timestamp, loots = {}, pos = {} }
     end
     if not IsInRaidOrGroup() or owntheloot then
         ns:DEBUG("|cffff7777 KILL++ " .. type_source_harvest)
@@ -179,6 +180,13 @@ local function increaseHarvestCount(areaID, type_source_harvest, owntheloot)
     else
         ns:DEBUG("|cffff7777 SKILL++ " .. type_source_harvest)
         Db_lr[areaID][type_source_harvest].sk = Db_lr[areaID][type_source_harvest].sk + 1 -- sharedKill
+    end
+    if pos then
+        local posId = bit.lshift(pos[1], 8) + pos[2]
+        if not Db_lr[areaID][type_source_harvest].pos[posId] then
+            ns:DEBUG("|cff77ff77 NEW POS {" .. pos[1] .. "," .. pos[2] .. "}")
+            Db_lr[areaID][type_source_harvest].pos[posId] = true
+        end
     end
 end
 
@@ -205,6 +213,19 @@ local function increaseItemLootCount(area, type_source_harvest, owntheloot, item
     end
 end
 
+local function GetPos(sourceGUID)
+    local mapID = C_Map.GetBestMapForUnit("player")
+    if mapID then
+        local sourceUnit = ns:GetUnitIDFromGUID(sourceGUID) or "player"
+        local position = C_Map.GetPlayerMapPosition(mapID, sourceUnit)
+        if position then
+            local x, y = position:GetXY()
+            return { ns:round(x * 100), ns:round(y * 100) }
+        end
+    end
+    return nil
+end
+
 -- This happend to get called twice sometimes (maybe in lag flagged situation)
 local function LOOT_READY(...)
     local t = GetTime()
@@ -218,6 +239,11 @@ local function LOOT_READY(...)
         local sourceType, sourceId = getSourceTypedId(guidSource)
         local harvestType = getHarvestType(guidSource, t)
         local area = ns:getAreaDiff(sourceType)
+        if trackedMobs[guidSource] and area ~= trackedMobs[guidSource].NIC_AreaDiff then
+            ns:DEBUG("|cffff7777 area diff changed... SKIPPP.")
+            return
+        end
+
         if not harvestType then -- skip ambiquitous harvest type
             ns:DEBUG("|cffff7777 ambiquitous harvest... SKIPPP.")
             setHarvestDone(guidSource, ns.HARVEST_TYPE.Loot)
@@ -225,7 +251,14 @@ local function LOOT_READY(...)
             local type_source_harvest = sourceType .. "-" .. sourceId .. "-" .. harvestType
             setHarvestDone(guidSource, harvestType)
             local owntheloot = playerOwnLoot(loots)
-            increaseHarvestCount(area, type_source_harvest, harvestType)
+            local pos;
+            if sourceType == ns.SOURCE_TYPE.Creature and trackedMobs[guidSource] then
+                pos = trackedMobs[guidSource].pos
+            elseif sourceType == ns.SOURCE_TYPE.GameObject then
+                pos = GetPos()
+            end
+            increaseHarvestCount(area, type_source_harvest, harvestType, pos)
+
             for slot, v in pairs(loots) do
                 local quantity, itemID, sourceType, sourceId, isQuestItem, lootQuality, lootName = unpack(v)
                 if itemID and not isQuestItem then
@@ -250,6 +283,110 @@ local function ITEM_LOCKED(event, bag, slot) -- to know wich in-bag item (tiny c
     last_item_locked = C_Container.GetContainerItemInfo(bag, slot) or nil
 end
 
+
+
+-- Mob Position tracking
+-- Step 1: Register mobs mouseovered that are not in combat yet (with current areaID)
+-- Step 2: If a mob not in combat get hit set him in combat (register position if player)
+-- step 3: if loot, areaID must be as the not in combat areaID
+
+
+local function UPDATE_MOUSEOVER_UNIT()
+    if UnitExists("mouseover") and ns:IsUnitCreature("mouseover") then
+        local guid = UnitGUID("mouseover")
+        if guid and not UnitAffectingCombat("mouseover") and not UnitIsDeadOrGhost("mouseover") then
+            trackedMobs[guid] = { NIC_AreaDiff = ns:getAreaDiff(), NIC_Time = GetTime() }
+        end
+    end
+end
+
+local function COMBAT_LOG_EVENT_UNFILTERED(event)
+    local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, _, _ =
+        CombatLogGetCurrentEventInfo()
+    if destGUID and trackedMobs[destGUID] and not trackedMobs[destGUID].pulled and trackedMobs[destGUID].NIC_Time + 10 > GetTime() then
+        -- Check if the event is an attack (melee, ranged, spell damage)
+        if subEvent == "SPELL_DAMAGE" or subEvent == "SWING_DAMAGE" or subEvent == "RANGE_DAMAGE" then
+            trackedMobs[destGUID].pulled = true
+            if sourceName then
+                print("Mob pulled by " .. sourceName)
+            end
+            -- Check if the attacker is the player OR a party/raid member
+            if (bit.band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) ~= 0) or
+                (bit.band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_PARTY) ~= 0) or
+                (bit.band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_RAID) ~= 0) then
+                -- Check if the mob was recorded as "not in combat" before
+
+                -- Get player map ID and position
+                local pos = GetPos(sourceGUID)
+                if pos then
+                    print("Mob pos X=" .. pos[1] .. ", Y=" .. pos[2])
+                    trackedMobs[destGUID].pos = pos
+                end
+            end
+        end
+    end
+end
+
+LootOPedia:RegisterEvent("UPDATE_MOUSEOVER_UNIT", UPDATE_MOUSEOVER_UNIT)
+LootOPedia:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", COMBAT_LOG_EVENT_UNFILTERED)
 LootOPedia:RegisterEvent("LOOT_READY", LOOT_READY)
 LootOPedia:RegisterEvent("ITEM_LOCKED", ITEM_LOCKED)
 LootOPedia:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", UNIT_SPELLCAST_SUCCEEDED)
+
+
+
+
+
+--[[ local f = CreateFrame("Frame")
+local trackedMobs = {} -- Table to store combat status of mobs before they are attacked
+
+-- Register events for combat log and targeting
+f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+f:RegisterEvent("PLAYER_TARGET_CHANGED") -- Fires when the player changes target
+f:RegisterEvent("NAMEPLATE_UNIT_ADDED")  -- Fires when a unit appears on screen (for mobs without targeting)
+
+f:SetScript("OnEvent", function(self, event, ...)
+    if event == "PLAYER_TARGET_CHANGED" then
+        -- When the player changes target, store whether the mob is already in combat
+        if UnitExists("target") and not UnitIsPlayer("target") then
+            local guid = UnitGUID("target")
+            if guid then
+                trackedMobs[guid] = UnitAffectingCombat("target") -- Store combat state
+            end
+        end
+    elseif event == "NAMEPLATE_UNIT_ADDED" then
+        -- When a nameplate appears (e.g. enemy spotted in the world), store combat state
+        local unitID = ...
+        if UnitExists(unitID) and not UnitIsPlayer(unitID) then
+            local guid = UnitGUID(unitID)
+            if guid then
+                trackedMobs[guid] = UnitAffectingCombat(unitID) -- Store combat state
+            end
+        end
+    elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        -- Combat event detected
+        local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, _, _ =
+        CombatLogGetCurrentEventInfo()
+
+        -- Check if the event is an attack (melee, ranged, spell damage)
+        if subEvent == "SPELL_DAMAGE" or subEvent == "SWING_DAMAGE" or subEvent == "RANGE_DAMAGE" then
+            -- Check if the attacker is the player OR a party/raid member
+            if (bit.band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) ~= 0) or
+                (bit.band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_PARTY) ~= 0) or
+                (bit.band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_RAID) ~= 0) then
+                -- Check if the mob was recorded as "not in combat" before
+                if destGUID and trackedMobs[destGUID] == false then
+                    -- Get player map ID and position
+                    local mapID = C_Map.GetBestMapForUnit("player")
+                    local position = C_Map.GetPlayerMapPosition(mapID, "player")
+
+                    if position then
+                        local x, y = position:GetXY()
+                        print("A party/raid member pulled a mob that was NOT in combat at X=" ..
+                        (x * 100) .. ", Y=" .. (y * 100) .. " on map ID " .. mapID)
+                    end
+                end
+            end
+        end
+    end
+end) ]]

@@ -87,6 +87,23 @@ function ns:ParseAreaLoot(area)
                     end
                     source.harvestTypes[harvestTypeID] = harvestType
                 end
+                local nodesSize = v.readVarInt()
+                local pointNodesSize = bit.rshift(nodesSize, 4)
+                local radiusNodesSize = bit.band(nodesSize, 0x0F)
+                source.pointNodes = {}
+                source.radiusNodes = {}
+                for n = 1, pointNodesSize, 1 do
+                    local x = v.readInt(1)
+                    local y = v.readInt(1)
+                    table.insert(source.pointNodes, { x = x, y = y })
+                end
+                for o = 1, radiusNodesSize, 1 do
+                    local xyr = v.readInt(2)
+                    local x = bit.rshift(xyr, 9)
+                    local y = (bit.rshift(bit.band(xyr, 0x01F8), 3)) / 64 * 100
+                    local r = ((bit.band(xyr, 0x0007)) + 1) * 6.25
+                    table.insert(source.radiusNodes, { x = x, y = y, r = r })
+                end
                 sourceType.sources[sourceID] = source
             end
             difficulty.sourceTypes[sourceTypeID] = sourceType

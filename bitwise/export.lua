@@ -74,6 +74,14 @@ local function serializeSection_AreaLoot()
             end
             sv.writeVarInt(lLength)
             sv.concat(lv.bin)
+            local pLength = 0
+            local pv = DataView:new()
+            for posId, _ in pairs(source.pos) do
+                pv.writeInt(posId, 2)
+                pLength = pLength + 1
+            end
+            sv.writeVarInt(pLength)
+            sv.concat(pv.bin)
             sLengnth = sLengnth + 1
         end
         v.writeVarInt(sLengnth)

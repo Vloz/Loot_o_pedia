@@ -46,6 +46,9 @@ local function show_Conditional(origin)
         local areaName = ns:areaLocNameFromId(ns.requiredDLArea)
         frame.leftPanel.title:SetText(string.format(L["UPDUNKNOWN"], areaName))
     end
+    if ns.IS_DEBUG then
+        Button:Enable()
+    end
     frame:Show()
 end
 

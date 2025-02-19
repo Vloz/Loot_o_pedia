@@ -9,6 +9,10 @@ function ns:tgetn(table)
     return count
 end
 
+function ns:IsUnitCreature(unit)
+    return UnitCreatureType(unit) ~= nil
+end
+
 function ns:hexToRGBA(hex)
     -- Ensure the hex code is in the correct format
     local shortHex = hex:match("#(%x+)")
@@ -37,4 +41,37 @@ function ns:hexToRGBA(hex)
     local a = tonumber(shortHex:sub(7, 8), 16) / 255
 
     return { r, g, b, a } -- Return with alpha
+end
+
+-- Function to find a group unit by GUID, including "player"
+function ns:GetUnitIDFromGUID(guid)
+    -- Check if the GUID matches the player's own GUID
+    if UnitGUID("player") == guid then
+        return "player"
+    end
+
+    -- Check raid members (if in a raid, up to 40 members)
+    if IsInRaid() then
+        for i = 1, GetNumGroupMembers() do
+            local unit = "raid" .. i
+            if UnitGUID(unit) == guid then
+                return unit
+            end
+        end
+    elseif IsInGroup() then
+        for i = 1, GetNumGroupMembers() do
+            local unit = "party" .. i
+            if UnitGUID(unit) == guid then
+                return unit
+            end
+        end
+    end
+
+    return nil -- Return nil if no matching unit is found
+end
+
+--not available in math.
+function ns:round(num, dp)
+    local mult = 10 ^ (dp or 0)
+    return math.floor(num * mult + 0.5) / mult
 end
