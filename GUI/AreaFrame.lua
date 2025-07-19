@@ -6,7 +6,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale("LootOPedia")
 ---@type AreaLoots?
 local areaLoots = nil
 
-local areaLocales = nil
+---@types AreaCache?
+local areaCache = nil
+
+
 local frame;
 local mapFrame;
 local leftContainer;
@@ -19,17 +22,23 @@ ns.EJBG_TYPE = {
     c = 2  --Custom bgFile
 }
 ns.AreaPresets = {
+    [1423] = { --EPLAGUELANDS
+        bgC = "#542",
+        acC = "#f83",
+        bgt = "c",
+        bgv = "EPLAGUELANDS"
+    },
     [1426] = { --DUNMOROGH
         bgC = "#09f",
         acC = "#fff",
         bgt = "c",
         bgv = "DUNMOROGH"
     },
-    [1428] = { --DUSKWOOD
-        bgC = "#851",
-        acC = "#fe0",
+    [1428] = { --BURNINGSTEPPES
+        bgC = "#732",
+        acC = "#f43",
         bgt = "c",
-        bgv = "DUSKWOOD"
+        bgv = "BURNINGSTEPPES"
     },
     [1429] = { --ELWYNN
         bgC = "#263",
@@ -43,6 +52,45 @@ ns.AreaPresets = {
         bgt = "c",
         bgv = "WESTFALL"
     },
+
+    [16633] = { --ONY60
+        bgC = "#654",
+        acC = "#e34",
+        bgt = "o",
+        bgv = "OnyxiasLair"
+    },
+
+    [16693] = { --ZG
+        bgC = "#375",
+        acC = "#f83",
+        bgt = "o",
+        bgv = "ZulGurub"
+    },
+
+    [16793] = { --MC
+        bgC = "#822",
+        acC = "#d62",
+        bgt = "o",
+        bgv = "MoltenCore"
+    },
+    [16853] = { --BWL
+        bgC = "#754",
+        acC = "#fc2",
+        bgt = "o",
+        bgv = "BlackwingLair"
+    },
+    [16893] = { --AQ20
+        bgC = "#a72",
+        acC = "#d62",
+        bgt = "o",
+        bgv = "RuinsofAhnQiraj"
+    },
+    [16915] = { --AQ40
+        bgC = "#85a",
+        acC = "#ee9",
+        bgt = "o",
+        bgv = "TempleofAhnQiraj"
+    },
     [16917] = { --NAXX
         bgC = "#063",
         acC = "#f9f",
@@ -51,8 +99,51 @@ ns.AreaPresets = {
     }
 }
 
+---comment
+---@return ItemListCategory[]
+local function loadItemsData()
+    if not areaLoots then
+        return nil
+    end
+    ---@type Difficulty
+    local selectedDifficulty = areaLoots.difficulties[next(areaLoots.difficulties)]
+    ---@type ItemListCategory[]
+    local categories = {}
+    if selectedDifficulty.sourceTypes[ns.SOURCE_TYPE.Creature] then
+        local sourceType = selectedDifficulty.sourceTypes[ns.SOURCE_TYPE.Creature] --TODO: Select source type here
+        for sourceID, source in pairs(sourceType.sources) do
+            ---@type ItemListCategory
+            local category = {
+                id = sourceID,
+                name = "[ID " .. sourceID .. "]",
+                items = {},
+                portrait = nil,
+                portraitType = nil,
+                weight = 0
+            }
+            if true then --TODO SET PORTRAIT DEPENDING ON SOURCE_TYPE
+                category.portraitType = ns.PORTRAIT_TYPE.NPC_DISPLAYID
+                category.portrait = ns:GetNpcDisplayId(sourceID, areaCache)
+            end
+            for harvestTypeID, harvestType in pairs(source.harvestTypes) do
+                for ItemId, loot in pairs(harvestType.loots) do
+                    local itemData = { weight = loot.weight, itemId = ItemId }
+                    itemData.dropRate = loot.dropRate
 
-local function loadItemsData(filterSource)
+                    itemData.minQt = math.min(itemData.minQt or loot.minQt, loot.minQt)
+                    itemData.maxQt = math.max(itemData.maxQt or loot.maxQt, loot.maxQt)
+                    category.weight = category.weight + itemData.weight
+                    category.items[ItemId] = itemData
+                end
+            end
+            table.insert(categories, category)
+        end
+    end
+    return categories
+end
+
+
+--[[ local function loadItemsData(filterSource)
     if not areaLoots then
         return nil
     end
@@ -93,30 +184,39 @@ local function loadItemsData(filterSource)
     end
     table.sort(sortedItemData, function(a, b) return a.weight > b.weight end)
     return sortedItemData
-end
+end ]]
 
-local function loadPortraitData(filterItemID)
+local function loadPortraitData(sourceTypeId, filterItemID)
     if not areaLoots then
         return nil
     end
+    if sourceTypeId == nil then
+        sourceTypeId = ns.SOURCE_TYPE.Creature
+    end
     ---@type Difficulty
-
     local selectedDifficulty = areaLoots.difficulties[next(areaLoots.difficulties)]
     local portraitDataArray = {}
-    if selectedDifficulty.sourceTypes[ns.SOURCE_TYPE.Creature] then
+    if selectedDifficulty.sourceTypes[sourceTypeId] then
         local sourceType = selectedDifficulty.sourceTypes[ns.SOURCE_TYPE.Creature]
         for sourceID, source in pairs(sourceType.sources) do
             ---@type PortraitData
             local portraitData = {
-                type = sourceType,
+                type = nil,
+                value = nil,
                 id = sourceID,
                 weight = source.weight,
                 loots = {},
                 class = source
                     .class,
                 faction = source.faction,
-                lvlmin = source.lvlmin
+                lvlmin = source.lvlmin,
+                portraitType = nil,
+                portrait = nil
             }
+            if sourceTypeId == ns.SOURCE_TYPE.Creature then
+                portraitData.type = ns.PORTRAIT_TYPE.NPC_DISPLAYID
+                portraitData.value = ns:GetNpcDisplayId(sourceID, areaCache)
+            end
             for harvestTypeID, harvestType in pairs(source.harvestTypes) do
                 for ItemId, loot in pairs(harvestType.loots) do
                     if filterItemID ~= nil and filterItemID == ItemId then
@@ -145,19 +245,19 @@ local function loadPortraitData(filterItemID)
 end
 
 function OnPortraitEnter(portrait)
-    ns:ShowItemList(loadItemsData(portrait.data.id), OnItemEnter, OnItemLeave)
+    --ns:ShowItemList(loadItemsData(portrait.data.id), OnItemEnter, OnItemLeave)
 end
 
 function OnPortraitLeave(portrait)
-    ns:ShowItemList(loadItemsData(), OnItemEnter, OnItemLeave)
+    --ns:ShowItemList(loadItemsData(), OnItemEnter, OnItemLeave)
 end
 
 function OnItemEnter(item)
-    ns:ShowPortraitList(loadPortraitData(item.data.itemId), nil, OnPortraitEnter, OnPortraitLeave, currentBgColor)
+    --ns:ShowPortraitList(loadPortraitData(item.data.itemId), nil, OnPortraitEnter, OnPortraitLeave, currentBgColor)
 end
 
 function OnItemLeave(item)
-    ns:ShowPortraitList(loadPortraitData(), 1, OnPortraitEnter, OnPortraitLeave, currentBgColor)
+    --ns:ShowPortraitList(loadPortraitData(), 1, OnPortraitEnter, OnPortraitLeave, currentBgColor)
 end
 
 function LootOPedia_ShowAreaTabFrame(self, areaId)
@@ -167,12 +267,13 @@ function LootOPedia_ShowAreaTabFrame(self, areaId)
         areaId = ns:getAreaId()
     end
     if ns:IsC_Map(areaId) then -- skip for classic dungeons
+        LOP_MapFrame:SetParent(leftContainer)
+        LOP_MapFrame:SetPoint("TOP", leftContainer, "TOP", 0, -40)
+        LOP_MapFrame:SetFrameLevel(leftContainer:GetFrameLevel())
         LOP_MapFrame:SetMapID(areaId)
+        LOP_MapFrame:Show()
     end
     print("AreaId: " .. areaId)
-    --MapCanvasMixin.OnShow(self);
-    --LOP_MapFrame:RefreshAlpha();
-    --LOP_MapFrame:UpdateUnitsVisibility();
     if ns.AreaPresets[areaId] then
         local preset = ns.AreaPresets[areaId]
         if preset.bgt == "o" then
@@ -205,16 +306,15 @@ function LootOPedia_ShowAreaTabFrame(self, areaId)
         local rightPanel = frame.RightPanel.Container
         LOP_ItemList:SetParent(rightPanel)
         LOP_ItemList:SetAllPoints(rightPanel)
-        rightPanel:SetSize(LOP_ItemList:GetWidth(), LOP_ItemList:GetHeight())
         local title = ns:DB_Game().build.areas[areaId].name or ns:areaLocNameFromId(areaId) or ("[" .. areaId .. "]")
 
         areaLoots = ns:ParseAreaLoot(ns:DB_Game().build.areas[areaId])
-        --areaLocales = ns:ParseAreaLocales(ns:DB_Game().build.areas[areaId])
+        areaCache = ns:ParseAreaCache(ns:DB_Game().build.areas[areaId])
         local portraitDataArray = loadPortraitData()
 
         local itemDataArray = loadItemsData()
         ns:ShowPortraitList(portraitDataArray, 1, OnPortraitEnter, OnPortraitLeave, currentBgColor)
-        ns:ShowItemList(itemDataArray, OnItemEnter, OnItemLeave)
+        ns:SetItemListDataSource(itemDataArray, OnItemEnter, OnItemLeave, currentAccentColor, currentBgColor)
         rightPanel:SetSize(LOP_ItemList:GetWidth(), LOP_ItemList:GetHeight())
         leftContainer.TitleStr:SetText(title)
         frame:Show()
@@ -233,14 +333,7 @@ function ns:AreaFrameOnLoad(f)
     leftContainer.TitleStr:SetJustifyH("LEFT")
     leftContainer.TitleStr:SetText("Area")
 
-    LOP_MapFrame:SetParent(leftContainer)
-    LOP_MapFrame:SetPoint("TOP", leftContainer, "TOP", 0, 0)
-    LOP_MapFrame:SetFrameLevel(leftContainer:GetFrameLevel())
-    --LOP_MapFrame:SetSize(150, 100)
-    --LOP_MapFrame:Show()
-    local mapID = MapUtil.GetDisplayableMapForPlayer()
-    LOP_MapFrame:SetMapID(mapID)
-    --Mixin(mapFrame, _G["BattlefieldMapMixin"])
+
 
     leftContainer:Show()
 end

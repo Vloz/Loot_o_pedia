@@ -280,7 +280,11 @@ local function UNIT_SPELLCAST_SUCCEEDED(event, unit, castGUID, spellID)
 end
 
 local function ITEM_LOCKED(event, bag, slot) -- to know wich in-bag item (tiny chest, disenchant) is being opened
-    last_item_locked = C_Container.GetContainerItemInfo(bag, slot) or nil
+    if bag and slot then
+        last_item_locked = C_Container.GetContainerItemInfo(bag, slot) or nil
+    else
+        last_item_locked = nil
+    end
 end
 
 

@@ -1,5 +1,61 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../FrameXML/UI.xsd">
+    <Script file="ItemList.lua"/>
+    <!-- Item Template -->
+    <Button name="LOP_ItemTemplate" virtual="true">
+        <HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" />
+        <Layers>
+            <Layer level="ARTWORK">
+
+                <FontString parentKey="ratetext" text="" justifyH="LEFT" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" x="-5" y="3"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="qttext" text="" justifyH="LEFT" inherits="NumberFontNormalSmall">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parent"/>
+                    </Anchors>
+                </FontString>
+
+            </Layer>
+            <Layer level="BORDER">
+                <Texture parentKey="IconBorder" file="Interface\Buttons\UI-ActionButton-Border" alphaMode="ADD">
+                    <TexCoords left="0.23" right="0.77" top="0.23" bottom="0.77"/>
+                </Texture>
+            </Layer>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="icon" />
+            </Layer>
+        </Layers>
+    </Button>
+    <Button name="LOP_ItemListHeaderTemplate" virtual="true">
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString parentKey="title" text="" justifyH="LEFT" inherits="GameFontNormal">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" x="26" y="0"/>
+                    </Anchors>
+                </FontString>
+                <Texture parentKey="portrait">
+                    <Size x="22" y="22"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" x="2" y="3"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BACKGROUND">
+
+                <Texture parentKey="line">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parent" x="28" y="-15"/>
+                    </Anchors>
+                    <Size x="300" y="1"/>
+                    <Color r="1" g="1" b="1" a="0.5"/>
+                </Texture>
+            </Layer>
+        </Layers>
+    </Button>
     <Frame name="LOP_ItemList">
         <Scripts>
             <OnLoad>
@@ -7,4 +63,5 @@
             </OnLoad>
         </Scripts>
     </Frame>
+
 </Ui>

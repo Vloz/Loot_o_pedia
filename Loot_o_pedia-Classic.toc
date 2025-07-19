@@ -22,7 +22,6 @@ bitwise\export.lua
 bitwise\import.lua
 bitwise\parse.lua
 GUI\Map.xml
-GUI\ItemTemplate.xml
 GUI\ItemList.lua
 GUI\ItemList.xml
 GUI\PortraitTemplate.xml

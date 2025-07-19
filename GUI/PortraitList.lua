@@ -74,7 +74,8 @@ function ns:InitPortraitList(frame)
         portrait:Show()
         table.insert(portraitPool, portrait)
     end
-    ListFrame:SetSize(PORTRAIT_COL_WIDTH * PORTRAIT_ROW_MAXCOUNT + LIST_MARGIN * 2,
+    print(PORTRAIT_COL_WIDTH * PORTRAIT_ROW_MAXCOUNT + LIST_MARGIN * 2 + 10)
+    ListFrame:SetSize(PORTRAIT_COL_WIDTH * PORTRAIT_ROW_MAXCOUNT + LIST_MARGIN * 2 + 10,
         PORTRAIT_COL_HEIGHT * math.ceil(PORTRAIT_POOL_SIZE / PORTRAIT_ROW_MAXCOUNT) + LIST_MARGIN * 2)
     ControlsFrame:SetPoint("TOP", ListFrame, "BOTTOM", 0, 0)
     frame:SetSize(ListFrame:GetWidth(), ListFrame:GetHeight() + ControlsFrame:GetHeight() + 5)
@@ -84,23 +85,14 @@ end
 ---@alias PortraitDataLoot { harvestType : HarvestTypeID, dropRate : number, weight : number, minQt : number, maxQt : number }
 ---@alias PortraitData  { type : SourceTypeID , id :number, weight :number, loots:table<number, PortraitDataLoot> }
 
+---@enum PortraitType
+ns.PORTRAIT_TYPE = { --Depending on portrait type may load texture, displayId, or raw 3dModel
+    NPC_DISPLAYID = 1,
+}
 
 
 
-local modelPlayer; -- modelplayer used to generate missing displayID
 
-local function SetPortraitTexture(creatureID, textureElement)
-    local displayID;
-    if false then --TODO SUPPORT EMBEDED DISPLAYID
-    else          -- No displayID found, generate it from modelplayer
-        if not modelPlayer then
-            modelPlayer = CreateFrame("PlayerModel", nil, UIParent)
-        end
-        modelPlayer:SetCreature(creatureID)
-        displayID = modelPlayer:GetDisplayInfo()
-    end
-    SetPortraitTextureFromCreatureDisplayID(textureElement, displayID)
-end
 
 local function buildPage()
     local baseColor = ns:hexToRGBA(currentBgColor)
@@ -112,7 +104,11 @@ local function buildPage()
             portrait.data = portraitsDataArray[((page - 1) * PORTRAIT_POOL_SIZE) + i]
             portrait.enterCallback = enterCallback
             portrait.leaveCallback = leaveCallback
-            SetPortraitTexture(portrait.data.id, portrait.txt)
+            if portrait.data.type == ns.PORTRAIT_TYPE.NPC_DISPLAYID then
+                SetPortraitTextureFromCreatureDisplayID(portrait.txt, portrait.data.value)
+            else
+                portrait:SetNormalTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+            end
             if portrait.data.dropRate then
                 portrait.ratetext:SetText(portrait.data.dropRate .. "%")
             else

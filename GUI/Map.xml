@@ -3,7 +3,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
     <Script file="Map.lua"/>
     <Frame name="LOP_MapFrame" parent="UIParent" inherits="MapCanvasFrameTemplate" mixin="LOPMapMixin">
-        <Size x="300" y="200"/>
+        <Size x="250" y="167"/>
         <Frames>
             <ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate">
                 <Anchors>

@@ -46,17 +46,11 @@ end
 
 
 
-local modelPlayer; -- used to get the DisplayID
 
 local function saveNpcBountyData(npcID, npcData)
     local prev = ns:LoadDataBounty(ns.DATA_BOUNTY_TYPE.CREATURE, npcID)
     if not prev then
-        if not modelPlayer then
-            modelPlayer = CreateFrame("PlayerModel", nil, UIParent)
-        end
-        modelPlayer:SetCreature(npcID)
-        local displayId = modelPlayer:GetDisplayInfo()
-        modelPlayer:ClearModel()
+        local displayId = ns:GetNpcDisplayId(npcID)
         local bounty = {
             dI = displayId,
             cl = npcData.class,
@@ -71,13 +65,8 @@ local function saveNpcBountyData(npcID, npcData)
         ns:SaveDataBounty(ns.DATA_BOUNTY_TYPE.CREATURE, npcID, bounty)
     else
         if not prev.dI then -- sometime diplayId extraction failed at first time
-            if not modelPlayer then
-                modelPlayer = CreateFrame("PlayerModel", nil, UIParent)
-            end
-            modelPlayer:SetCreature(npcID)
-            local displayId = modelPlayer:GetDisplayInfo()
+            local displayId = ns:GetNpcDisplayId(npcID)
             prev.dI = displayId
-            modelPlayer:ClearModel()
         end
         local areaDiff = ns:getAreaDiff()
         if not prev.a[areaDiff] then
@@ -138,6 +127,34 @@ local function OnTooltipSetUnit(tooltip)
                 saveNpcBountyLocale(npcID, npcName, usx)
             end
         end
+    end
+end
+
+local modelPlayer; -- modelplayer used to generate missing displayID
+
+
+function ns:GetNpcDisplayId(creatureId, areaCache)
+    if areaCache and areaCache.npc[creatureId] and areaCache.npc[creatureId].displayId and areaCache.npc[creatureId].displayId ~= 0 then
+        return areaCache.npc[creatureId].displayId
+    else -- No displayID found, generate it from modelplayer
+        if not modelPlayer then
+            modelPlayer = CreateFrame("PlayerModel", nil, UIParent)
+        end
+        modelPlayer:SetCreature(creatureId)
+        local displayId = modelPlayer:GetDisplayInfo()
+        if displayId == 0 then --Sometimes displayId is not cached on 1st display
+            modelPlayer:ClearModel()
+            modelPlayer:SetCreature(creatureId)
+            displayId = modelPlayer:GetDisplayInfo()
+        end
+        modelPlayer:ClearModel()
+        if areaCache then
+            if not areaCache.npc[creatureId] then
+                areaCache.npc[creatureId] = {}
+            end
+            areaCache.npc[creatureId].displayId = displayId
+        end
+        return displayId
     end
 end
 

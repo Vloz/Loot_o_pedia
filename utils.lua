@@ -75,3 +75,6 @@ function ns:round(num, dp)
     local mult = 10 ^ (dp or 0)
     return math.floor(num * mult + 0.5) / mult
 end
+
+ns.DEFAULT_ACC = { 1, 0.82, 0, 1 }   -- yellow wow
+ns.DEFAULT_BGC = { 0.5, 0.5, 0.5, 1 }

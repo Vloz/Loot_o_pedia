@@ -118,6 +118,20 @@ function ns:ParseAreaLoot(area)
     return areaLoots
 end
 
+---@alias AreaCache { npc : table<number, NpcCache> }
+---@alias NpcCache  { displayID : number}
+
+
+---Deserialize data that user harvested locally that are too heavy to be sent throught micro-updates
+---@param area any
+---@return AreaCache
+function ns:ParseAreaCache(area)
+    if not area.cache then
+        area.cache = { npc = {} }
+    end
+    return area.cache
+end
+
 function ns:ParseAreaLocales(area)
     local zipped = base64:decode(area.lstr)
     local bin = LibDeflate:DecompressZlib(zipped)
